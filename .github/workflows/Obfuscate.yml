@@ -37,7 +37,9 @@ jobs:
         working-directory: ./bpb-repo
         run: |
           NODE_ENV=mangle npm run build
+          ls -la dist/
           cp dist/worker.js ../origin.js
+          ls -la ../origin.js
 
       - name: Install javascript-obfuscator
         run: |
