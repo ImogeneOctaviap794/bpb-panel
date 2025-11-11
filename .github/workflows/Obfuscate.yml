@@ -18,19 +18,31 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
 
+      - name: Clone BPB Worker Panel
+        run: |
+          git clone --depth 1 https://github.com/bia-pain-bache/BPB-Worker-Panel.git bpb-repo
+
       - name: Set up Node.js
+        working-directory: ./bpb-repo
         uses: actions/setup-node@v4
         with:
           node-version: "latest"
 
       - name: Install dependencies
+        working-directory: ./bpb-repo
+        run: |
+          npm install
+
+      - name: Build unobfuscated worker
+        working-directory: ./bpb-repo
+        run: |
+          NODE_ENV=mangle npm run build
+          cp dist/worker.js ../origin.js
+
+      - name: Install javascript-obfuscator
         run: |
           npm install -g javascript-obfuscator
 
-      - name: Clone BPB workjs
-        run: |
-          wget -O origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/refs/heads/main/build/unobfuscated-worker.js
-      
       - name: Obfuscate BPB worker js
         run: |
           javascript-obfuscator origin.js --output _worker.js \
